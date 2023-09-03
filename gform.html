@@ -1,0 +1,87 @@
+function doPost(request) {
+  var idSpreadSheet = 'YOUR-SPREADSHEET-ID'
+  var sourceSheetName = "YOUR-SHEET-NAME"; // Replace with the name of the source sheet
+  var spreadSheet = SpreadsheetApp.openById(idSpreadSheet)
+  var sourceSheet = spreadSheet.getSheetByName(sourceSheetName);
+
+  var data = JSON.parse(request.postData.contents);
+  var values = data.message.split("#");
+  if (validate(data.message)[0]) {
+    sourceSheet.appendRow([values[0].trim(), values[1].trim(), new Date(values[2].trim()), values[3].trim(), values[4].trim()]);
+    sendFeedback(data.sender, 'Success!! Data berhasil ditambahkan ke database spreadsheet!');
+  } else {
+    sendFeedback(data.sender, validate(data.message)[1]);
+  }
+  return ContentService.createTextOutput('Webhook received');
+}
+
+function validate(message) {
+  var error = "Valid"
+  var status = true
+  var values = message.split('#')
+
+  // validate all data
+  if (values.length < 5) {
+    status = false
+    error = "Data tidak lengkap, \r\nGunakan format Nama#Type#Tanggal#Nomor Tujuan#Lokasi"
+    return [status, error]
+  }
+
+  // validate location
+  if (values[4].length < 1) {
+    status = false
+    error = "Lokasi belum diisi"
+  }
+
+  // validate phone number
+  if (values[3].length < 1) {
+    status = false
+    error = "Nomor telepon belum diisi"
+  }
+
+  // validate date, cast date
+  if (isNaN(new Date(values[2]))) {
+    status = false
+    error = "Tanggal salah format, \r\nGunakan format tanggal :\r\nMM-DD-YYYY\r\nContoh: 06-30-2023"
+  }
+
+  // validate date
+  if (values[2].length < 1) {
+    status = false
+    error = "Tanggal belum diisi"
+  }
+
+  // validate event type
+  if (values[1].length < 1) {
+    status = false
+    error = "Type belum diisi"
+  }
+
+  // validate name
+  if (values[0].length < 1) {
+    status = false
+    error = "Nama belum diisi"
+  }
+
+  return [status, error]
+}
+
+function sendFeedback(to, message) {
+  const headers = {
+    'Authorization': 'TOKEN',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+  var requestBody = {
+    'target': to,
+    'message': message
+  };
+  var url = 'https://api.fonnte.com/send'
+  var params = {
+    method: 'POST',
+    payload: JSON.stringify(requestBody),
+    headers: headers,
+    contentType: "application/json"
+  };
+  UrlFetchApp.fetch(url, params);
+}
