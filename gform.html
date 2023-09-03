@@ -1,13 +1,13 @@
 function doPost(request) {
-  var idSpreadSheet = 'YOUR-SPREADSHEET-ID'
-  var sourceSheetName = "YOUR-SHEET-NAME"; // Replace with the name of the source sheet
+  var idSpreadSheet = '1nq6WwtbFgue2R-Aa9vLnnetUM1oc8qAU2HgCgC1nm_4'
+  var sourceSheetName = "DataLP"; // Replace with the name of the source sheet
   var spreadSheet = SpreadsheetApp.openById(idSpreadSheet)
   var sourceSheet = spreadSheet.getSheetByName(sourceSheetName);
 
   var data = JSON.parse(request.postData.contents);
   var values = data.message.split("#");
   if (validate(data.message)[0]) {
-    sourceSheet.appendRow([values[0].trim(), values[1].trim(), new Date(values[2].trim()), values[3].trim(), values[4].trim()]);
+    sourceSheet.appendRow([new Date(values[2].trim()), values[0].trim(), values[1].trim(), values[2].trim(), values[3].trim(), values[4].trim(), values[5].trim(), values[6].trim(), values[7].trim(), values[8].trim(), values[9].trim(),]);
     sendFeedback(data.sender, 'Success!! Data berhasil ditambahkan ke database spreadsheet!');
   } else {
     sendFeedback(data.sender, validate(data.message)[1]);
@@ -23,46 +23,69 @@ function validate(message) {
   // validate all data
   if (values.length < 5) {
     status = false
-    error = "Data tidak lengkap, \r\nGunakan format Nama#Type#Tanggal#Nomor Tujuan#Lokasi"
+    error = "Data tidak lengkap, \r\nGunakan format Tanggal#Lokasi#965..#291...#AL#Fleet#Material#Panel#RL"
     return [status, error]
   }
-
-  // validate location
-  if (values[4].length < 1) {
+    
+  // validate date
+  if (values[0].length < 1) {
+    status = false
+    error = "Tanggal belum diisi"
+  }
+    
+  // validate date, cast date
+  if (isNaN(new Date(values[0]))) {
+    status = false
+    error = "Tanggal salah format, \r\nGunakan format tanggal :\r\nMM-DD-YYYY\r\nContoh: 06-30-2023"
+  }
+    
+  // validate Lokasi
+  if (values[1].length < 1) {
     status = false
     error = "Lokasi belum diisi"
   }
 
-  // validate phone number
-  if (values[3].length < 1) {
-    status = false
-    error = "Nomor telepon belum diisi"
-  }
-
-  // validate date, cast date
-  if (isNaN(new Date(values[2]))) {
-    status = false
-    error = "Tanggal salah format, \r\nGunakan format tanggal :\r\nMM-DD-YYYY\r\nContoh: 06-30-2023"
-  }
-
-  // validate date
+  // validate Northing (965...)
   if (values[2].length < 1) {
     status = false
-    error = "Tanggal belum diisi"
+    error = "Northing belum diisi"
   }
-
-  // validate event type
-  if (values[1].length < 1) {
+    
+  // validate Easthing (291...)
+  if (values[3].length < 1) {
     status = false
-    error = "Type belum diisi"
+    error = "Easthing belum diisi"
   }
-
-  // validate name
-  if (values[0].length < 1) {
+    
+  // validate actual level
+  if (values[4].length < 1) {
     status = false
-    error = "Nama belum diisi"
+    error = "actual level belum diisi"
   }
 
+  // validate fleet
+  if (values[5].length < 1) {
+    status = false
+    error = "Fleet belum diisi"
+  }
+
+  // validate Material
+  if (values[6].length < 1) {
+    status = false
+    error = "Material belum diisi"
+  }
+
+  // validate Panel
+  if (values[7].length < 1) {
+    status = false
+    error = "Panel belum diisi"
+  }
+
+  // validate RL
+  if (values[8].length < 1) {
+    status = false
+    error = "RL belum diisi"
+    
   return [status, error]
 }
 
