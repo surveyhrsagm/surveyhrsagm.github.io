@@ -73,9 +73,7 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var dwgLayer = L.imageOverlay('https://surveyhrsagm.github.io/hrs_smt2_r1_long_lat.dwg');
-    dwgLayer.addTo(map);
-
+    var shpLayer = omnivore.shp('https://surveyhrsagm.github.io/linedgn.shp').addTo(map);
     var sidebar = document.querySelector('.sidebar');
 
     var apiKey = 'AIzaSyBJjSGYyvDcL-6D2SJnSHzr5GX3wdWM2BM';
